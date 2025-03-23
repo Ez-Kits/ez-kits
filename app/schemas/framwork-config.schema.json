@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"properties": {
+		"sidebar": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/sidebarItem"
+			}
+		}
+	},
+	"definitions": {
+		"sidebarItem": {
+			"type": "object",
+			"properties": {
+				"title": {
+					"type": "string"
+				},
+				"slug": {
+					"type": "string"
+				},
+				"icon": {
+					"type": "string",
+					"nullable": true
+				},
+				"label": {
+					"type": "object",
+					"properties": {
+						"text": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string",
+							"nullable": true
+						}
+					},
+					"nullable": true
+				}
+			},
+			"nullable": true
+		}
+	}
+}
