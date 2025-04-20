@@ -1,24 +1,164 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
-import type { SidebarItem } from "~/schemas/framework-config";
+import type { SelectItem } from "@nuxt/ui";
+import { useWindowSize } from "@vueuse/core";
+import {
+	getFrameworkIcon,
+	getFrameworkName,
+} from "~/libraries/frameworks-info";
 
-const props = defineProps<{
-	items: SidebarItem[];
-}>();
+const docData = injectDocData();
 
-function transformSidebarItem(item: SidebarItem): NavigationMenuItem {
-	return {
-		label: item.title,
-		href: item.slug,
-		children: item.children?.map(transformSidebarItem),
-	};
-}
+// Frameworks
+const route = useRoute("pkg-version-docs-framework-slug");
+const currentFramework = computed({
+	get: () => docData.value?.currentFramework,
+	set: (value) => {
+		if (!value) return;
 
-const items = computed((): NavigationMenuItem[] => {
-	return props.items.map(transformSidebarItem);
+		navigateTo({
+			name: "pkg-version-docs-framework-slug",
+			params: {
+				framework: value,
+				pkg: route.params.pkg,
+				version: route.params.version,
+				slug: route.params.slug,
+			},
+		});
+	},
+});
+const currentFrameworkIcon = computed(() =>
+	currentFramework.value ? getFrameworkIcon(currentFramework.value) : ""
+);
+
+const frameworkOptions = computed((): SelectItem[] => {
+	return (
+		docData.value?.libraryConfig.frameworks.map((framework) => {
+			return {
+				label: getFrameworkName(framework),
+				value: framework,
+				icon: getFrameworkIcon(framework),
+			};
+		}) ?? []
+	);
+});
+
+// Version
+const versionOptions = computed(
+	(): SelectItem[] =>
+		docData.value?.libraryConfig.versions.map((version) => {
+			return {
+				label: version.name,
+				value: version.name,
+			};
+		}) ?? []
+);
+
+const currentVersion = computed({
+	get: () => docData.value?.currentVersion,
+	set: (value) => {
+		if (!value) return;
+		navigateTo({
+			name: "pkg-version-docs-framework-slug",
+			params: {
+				version: value,
+				pkg: route.params.pkg,
+				framework: route.params.framework,
+				slug: route.params.slug,
+			},
+		});
+	},
+});
+
+// Sidebar Items
+const sidebarItems = computed(
+	() => docData.value?.frameworkConfig.sidebar ?? []
+);
+const { navigationItems, activeTabIndex, tabsItems } =
+	useDocSidebar(sidebarItems);
+
+// Sidebar Collapse
+const { width } = useWindowSize();
+const isLargeScreen = computed(() => width.value >= 1024);
+const isCollapsed = ref(true);
+
+const mergedCollapsed = computed(() => {
+	// if (typeof window === "undefined") return true;
+
+	if (isLargeScreen.value) return false;
+	return isCollapsed.value;
 });
 </script>
 
 <template>
-	<UNavigationMenu :items="items" />
+	<UCollapsible
+		:class="[
+			'bg-(--ui-bg)',
+			'flex flex-col',
+			'z-50 fixed w-full left-0 top-0 self-start px-6',
+			'lg:px-0 lg:left-auto lg:sticky',
+			'pt-1 lg:pt-4',
+			'max-h-dvh overflow-hidden',
+			{
+				'h-dvh': !mergedCollapsed,
+			},
+		]"
+		:open="!mergedCollapsed"
+		:unmount-on-hide="false"
+	>
+		<div class="flex gap-4 justify-between items-center">
+			<div class="flex gap-x-2 items-center">
+				<img
+					src="/logo.png"
+					class="w-8 h-auto object-contain"
+					draggable="false"
+				/>
+				<span class="text-3xl font-black italic select-none">
+					{{ docData?.libraryConfig.name }}
+				</span>
+			</div>
+			<UButton
+				icon="i-lucide-menu"
+				variant="soft"
+				class="lg:hidden"
+				@click="isCollapsed = !isCollapsed"
+			/>
+		</div>
+		<template #content>
+			<div
+				class="flex flex-col gap-y-4 overflow-hidden max-h-[calc(100dvh-4rem-1.15rem)] lg:max-h-[calc(100dvh-4rem-2rem)] mt-4"
+			>
+				<ClientOnly>
+					<DocSearch />
+					<div class="flex gap-x-2">
+						<USelect
+							v-model="currentFramework as undefined"
+							:icon="currentFrameworkIcon"
+							:items="frameworkOptions"
+							class="flex-2/3"
+						/>
+						<USelect
+							v-model="currentVersion as undefined"
+							:items="versionOptions"
+							class="flex-1/3"
+						/>
+					</div>
+				</ClientOnly>
+
+				<div class="flex-1 overflow-auto">
+					<UTabs
+						v-model="activeTabIndex"
+						:items="tabsItems"
+						class="sticky top-0 mb-2 z-10"
+						color="neutral"
+					/>
+					<UNavigationMenu
+						:items="navigationItems"
+						orientation="vertical"
+						highlight-color="primary"
+						highlight
+					/>
+				</div>
+			</div>
+		</template>
+	</UCollapsible>
 </template>

@@ -8,6 +8,7 @@ export default defineNuxtConfig({
 		"@nuxt/ui",
 		"@nuxtjs/mdc",
 	],
+	css: ["~/assets/css/main.css"],
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
 	future: {
@@ -15,5 +16,19 @@ export default defineNuxtConfig({
 	},
 	experimental: {
 		typedPages: true,
+	},
+	components: {
+		global: true,
+		dirs: ["~/components/prose", "~/components/mdc", "~/components"],
+	},
+	mdc: {
+		headings: {
+			anchorLinks: true,
+		},
+	},
+	typescript: {
+		tsConfig: {
+			include: ["orama.d.ts"],
+		},
 	},
 });

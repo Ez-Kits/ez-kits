@@ -1,7 +1,6 @@
 <script setup lang="ts"></script>
-
 <template>
-	<UAlert v-bind="$attrs" class="my-4">
+	<p class="my-4 text-base">
 		<slot />
-	</UAlert>
+	</p>
 </template>

@@ -6,8 +6,8 @@ export const sidebarItemLabelSchema = z.object({
 });
 
 export const baseSidebarItemSSchema = z.object({
-	title: z.string(),
-	slug: z.string(),
+	text: z.string(),
+	slug: z.string().optional(),
 	icon: z.string().optional(),
 	label: sidebarItemLabelSchema.optional(),
 });
@@ -17,12 +17,19 @@ export const sidebarItemSchema: z.ZodType<SidebarItem> =
 		children: z.lazy(() => z.array(sidebarItemSchema).optional()),
 	});
 
+export const sidebarTabSchema = z.object({
+	label: z.string(),
+	icon: z.string().optional(),
+	children: z.array(sidebarItemSchema),
+});
+
 export const frameworkConfigSchema = z.object({
-	sidebar: z.array(sidebarItemSchema),
+	sidebar: z.array(sidebarTabSchema),
 });
 
 export type SidebarItemLabel = z.infer<typeof sidebarItemLabelSchema>;
 export type SidebarItem = z.infer<typeof baseSidebarItemSSchema> & {
 	children?: SidebarItem[];
 };
+export type SidebarTab = z.infer<typeof sidebarTabSchema>;
 export type FrameworkConfig = z.infer<typeof frameworkConfigSchema>;

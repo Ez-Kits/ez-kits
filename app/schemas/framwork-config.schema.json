@@ -5,11 +5,29 @@
 		"sidebar": {
 			"type": "array",
 			"items": {
-				"$ref": "#/definitions/sidebarItem"
+				"$ref": "#/definitions/sidebarTab"
 			}
 		}
 	},
 	"definitions": {
+		"sidebarTab": {
+			"type": "object",
+			"properties": {
+				"label": {
+					"type": "string"
+				},
+				"icon": {
+					"type": "string",
+					"nullable": true
+				},
+				"children": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/sidebarItem"
+					}
+				}
+			}
+		},
 		"sidebarItem": {
 			"type": "object",
 			"properties": {
@@ -17,7 +35,8 @@
 					"type": "string"
 				},
 				"slug": {
-					"type": "string"
+					"type": "string",
+					"nullable": true
 				},
 				"icon": {
 					"type": "string",
@@ -35,6 +54,13 @@
 						}
 					},
 					"nullable": true
+				},
+				"children": {
+					"type": "array",
+					"nullable": true,
+					"items": {
+						"$ref": "#/definitions/sidebarItem"
+					}
 				}
 			},
 			"nullable": true
