@@ -1,13 +1,11 @@
-import type { MDCParserResult } from "@nuxtjs/mdc";
+import type { Toc } from "@nuxtjs/mdc";
 import type { LibraryName } from "~/libraries/libraries";
 import type { Library } from "~/libraries/types";
 import type { FrameworkConfig } from "~/schemas/framework-config";
 
-export function provideDocData(
-	data: ComputedRef<
+export function provideDocData(data: {
+	basicInfo: ComputedRef<
 		| {
-				rawContent: string;
-				parsedContent: MDCParserResult;
 				frameworkConfig: FrameworkConfig;
 				libraryConfig: Library;
 				currentFramework: string;
@@ -15,7 +13,9 @@ export function provideDocData(
 				currentLibrary: LibraryName;
 		  }
 		| undefined
-	>
-) {
+	>;
+	toc: Ref<Toc | undefined>;
+	content: Ref<string | undefined>;
+}) {
 	provide("DOC_DATA", data);
 }

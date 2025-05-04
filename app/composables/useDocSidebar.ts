@@ -3,11 +3,14 @@ import type { SidebarItem, SidebarTab } from "~/schemas/framework-config";
 
 export default function useDocSidebar(sidebarTabs: MaybeRef<SidebarTab[]>) {
 	const route = useRoute("pkg-version-docs-framework-slug");
-	const { pkg, version, slug, framework } = route.params;
-	const stringSlug = computed(() => `${framework}/${slug?.join("/")}`);
+	const stringSlug = computed(
+		() => `${route.params.framework}/${route.params.slug?.join("/")}`
+	);
 
 	function normalizeSlug(slug: string): string {
-		return slug.replace(new RegExp(`^/?${framework}/`), "").replace(/^\//, "");
+		return slug
+			.replace(new RegExp(`^/?${route.params.framework}/`), "")
+			.replace(/^\//, "");
 	}
 
 	function hasActiveItem(items: SidebarItem[]): boolean {
@@ -50,11 +53,10 @@ export default function useDocSidebar(sidebarTabs: MaybeRef<SidebarTab[]>) {
 	function transformSidebarItem(item: SidebarItem): NavigationMenuItem {
 		const href = item.children
 			? undefined
-			: `/${pkg}/${version}/docs/${framework}/${normalizeSlug(
-					item.slug ?? ""
-			  )}`;
+			: `/${route.params.pkg}/${route.params.version}/docs/${
+					route.params.framework
+			  }/${normalizeSlug(item.slug ?? "")}`;
 
-		const defaultOpen = item.children ? hasActiveItem(item.children) : false;
 		const active = isActiveItem(item);
 
 		return {
@@ -63,7 +65,8 @@ export default function useDocSidebar(sidebarTabs: MaybeRef<SidebarTab[]>) {
 			value: href,
 			to: href,
 			children: item.children?.map(transformSidebarItem),
-			defaultOpen,
+			defaultOpen: true,
+			class: item.children ? "!text-sm font-semibold" : undefined,
 			active,
 		};
 	}
@@ -87,10 +90,8 @@ export default function useDocSidebar(sidebarTabs: MaybeRef<SidebarTab[]>) {
 		})
 	);
 
-	const activeTabIndex = ref(0);
-
-	watchEffect(() => {
-		activeTabIndex.value = toValue(sidebarTabs).findIndex((tab) =>
+	function getActiveTab() {
+		return toValue(sidebarTabs).find((tab) =>
 			tab.children.some((child) => {
 				if (child.children) {
 					return hasActiveItem(child.children);
@@ -98,13 +99,21 @@ export default function useDocSidebar(sidebarTabs: MaybeRef<SidebarTab[]>) {
 
 				return isActiveItem(child);
 			})
-		);
+		)?.label;
+	}
+
+	const activeTabIndex = ref<string | undefined>(getActiveTab());
+
+	watchEffect(() => {
+		if (typeof window !== "undefined") {
+			activeTabIndex.value = getActiveTab();
+		}
 	});
 
 	const navigationItems = computed(
 		() =>
 			toValue(computedSidebarTabs).find(
-				(tab, index) => index === activeTabIndex.value
+				(tab) => tab.label === activeTabIndex.value
 			)?.children ?? []
 	);
 

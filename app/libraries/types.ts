@@ -6,6 +6,12 @@ export interface Library {
 	state: State;
 	socials: Social[];
 	repository: string;
+	docStatus: DocStatus;
+}
+
+export enum DocStatus {
+	WIP = "wip",
+	Done = "done",
 }
 
 export interface Social {

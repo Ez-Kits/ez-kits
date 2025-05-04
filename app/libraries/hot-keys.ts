@@ -1,20 +1,22 @@
-import { Framework, State, type Library } from "./types";
+import { DocStatus, Framework, State, type Library } from "./types";
 
 export const hotKeysConfig: Library = {
-	name: "Hot Keys",
-	description: "A library for handling hot keys",
+	name: "Ez Hot Keys",
+	description:
+		"Ease of use yet powerful API for hot keys management. Supports Vue, React and Solid",
 	repository: "ez-kits/hot-keys",
+	docStatus: DocStatus.Done,
 	versions: [
 		{
 			name: "latest",
 			state: State.Alpha,
 			isLatest: true,
-			branch: "add-doc",
+			branch: "main",
 		},
 		{
 			name: "1.x",
 			state: State.Alpha,
-			branch: "add-doc",
+			branch: "main",
 		},
 	],
 	frameworks: [Framework.React, Framework.Vue, Framework.Solid],

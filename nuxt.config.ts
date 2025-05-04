@@ -26,9 +26,9 @@ export default defineNuxtConfig({
 			anchorLinks: true,
 		},
 	},
-	typescript: {
-		tsConfig: {
-			include: ["orama.d.ts"],
+	routeRules: {
+		"/**/docs/**": {
+			isr: 3600,
 		},
 	},
 });

@@ -1,9 +1,10 @@
-import { Framework, State, type Library } from "./types";
+import { DocStatus, Framework, State, type Library } from "./types";
 
 export const scrollbarConfig: Library = {
 	name: "Ez Scrollbar",
-	description: "A scrollbar component for Vue",
+	description: "Headless UI Scrollbar component for React, Vue, and Solid",
 	repository: "ez-kits/scrollbar",
+	docStatus: DocStatus.WIP,
 	versions: [
 		{
 			name: "latest",

@@ -2,7 +2,7 @@
 
 <template>
 	<footer
-		class="border-t border-t-(--ui-border-muted) py-4 mt-10 px-6 flex flex-wrap justify-between"
+		class="border-t border-t-(--ui-border-muted) py-4 px-6 flex flex-wrap justify-between"
 	>
 		<div class="w-full md:flex-1/4 order-2 md:order-1">
 			<slot name="left" />

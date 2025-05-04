@@ -23,6 +23,17 @@ export function getLibraryBranch(name: LibraryName, version: string) {
 	return branch;
 }
 
+export function getLibraryLatestVersionIndexUrl(name: LibraryName) {
+	const library = getLibrary(name);
+	const latestVersion =
+		library.versions.find((v) => v.isLatest) ?? library.versions[0];
+	if (!latestVersion) {
+		throw new Error(`Latest version not found for library ${name}`);
+	}
+
+	return `${name}/${latestVersion.name}`;
+}
+
 export function getGithubDocsFileUrl(
 	name: LibraryName,
 	version: string,
@@ -43,6 +54,10 @@ export async function getGithubDocsFileContent(
 ) {
 	const url = getGithubDocsFileUrl(name, version, path);
 	const response = await fetch(url);
+	if (!response.ok) {
+		console.error(response);
+		throw new Error(`Failed to fetch ${url}`);
+	}
 	const content = await response.text();
 	return content;
 }

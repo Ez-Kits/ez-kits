@@ -11,7 +11,7 @@ const docData = injectDocData();
 // Frameworks
 const route = useRoute("pkg-version-docs-framework-slug");
 const currentFramework = computed({
-	get: () => docData.value?.currentFramework,
+	get: () => docData.basicInfo.value?.currentFramework,
 	set: (value) => {
 		if (!value) return;
 
@@ -32,7 +32,7 @@ const currentFrameworkIcon = computed(() =>
 
 const frameworkOptions = computed((): SelectItem[] => {
 	return (
-		docData.value?.libraryConfig.frameworks.map((framework) => {
+		docData.basicInfo.value?.libraryConfig.frameworks.map((framework) => {
 			return {
 				label: getFrameworkName(framework),
 				value: framework,
@@ -45,7 +45,7 @@ const frameworkOptions = computed((): SelectItem[] => {
 // Version
 const versionOptions = computed(
 	(): SelectItem[] =>
-		docData.value?.libraryConfig.versions.map((version) => {
+		docData.basicInfo.value?.libraryConfig.versions.map((version) => {
 			return {
 				label: version.name,
 				value: version.name,
@@ -54,7 +54,7 @@ const versionOptions = computed(
 );
 
 const currentVersion = computed({
-	get: () => docData.value?.currentVersion,
+	get: () => docData.basicInfo.value?.currentVersion,
 	set: (value) => {
 		if (!value) return;
 		navigateTo({
@@ -71,8 +71,9 @@ const currentVersion = computed({
 
 // Sidebar Items
 const sidebarItems = computed(
-	() => docData.value?.frameworkConfig.sidebar ?? []
+	() => docData.basicInfo.value?.frameworkConfig.sidebar ?? []
 );
+
 const { navigationItems, activeTabIndex, tabsItems } =
 	useDocSidebar(sidebarItems);
 
@@ -99,7 +100,7 @@ const mergedCollapsed = computed(() => {
 			'pt-1 lg:pt-4',
 			'max-h-dvh overflow-hidden',
 			{
-				'h-dvh': !mergedCollapsed,
+				'h-dvh lg:h-auto': !mergedCollapsed,
 			},
 		]"
 		:open="!mergedCollapsed"
@@ -113,7 +114,7 @@ const mergedCollapsed = computed(() => {
 					draggable="false"
 				/>
 				<span class="text-3xl font-black italic select-none">
-					{{ docData?.libraryConfig.name }}
+					{{ docData.basicInfo.value?.libraryConfig.name }}
 				</span>
 			</div>
 			<UButton
@@ -131,32 +132,42 @@ const mergedCollapsed = computed(() => {
 					<DocSearch />
 					<div class="flex gap-x-2">
 						<USelect
-							v-model="currentFramework as undefined"
+							:model-value="currentFramework as undefined"
 							:icon="currentFrameworkIcon"
 							:items="frameworkOptions"
 							class="flex-2/3"
+							@update:model-value="currentFramework = $event"
 						/>
 						<USelect
-							v-model="currentVersion as undefined"
+							:model-value="currentVersion as undefined"
 							:items="versionOptions"
 							class="flex-1/3"
+							@update:model-value="currentVersion = $event"
 						/>
 					</div>
 				</ClientOnly>
 
 				<div class="flex-1 overflow-auto">
 					<UTabs
+						v-if="activeTabIndex"
 						v-model="activeTabIndex"
 						:items="tabsItems"
 						class="sticky top-0 mb-2 z-10"
 						color="neutral"
-					/>
-					<UNavigationMenu
-						:items="navigationItems"
-						orientation="vertical"
-						highlight-color="primary"
-						highlight
-					/>
+						size="xs"
+					>
+						<template #content>
+							<UNavigationMenu
+								:items="navigationItems"
+								orientation="vertical"
+								highlight-color="primary"
+								highlight
+								:ui="{
+									linkLeadingIcon: 'text-xl',
+								}"
+							/>
+						</template>
+					</UTabs>
 				</div>
 			</div>
 		</template>
