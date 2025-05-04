@@ -14,7 +14,7 @@ export const hotKeysConfig: Library = {
 			branch: "main",
 		},
 		{
-			name: "1.x",
+			name: "0.x",
 			state: State.Alpha,
 			branch: "main",
 		},
