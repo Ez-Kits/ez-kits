@@ -26,7 +26,9 @@ const { data: searchData } = await useAsyncData(
 	"search-data",
 	async () => {
 		return fetch(
-			`https://assets.ez-kits.org/docs-search-data-${getLibraryBranch(
+			`https://assets.ez-kits.org/docs-search-data-${
+				route.params.pkg
+			}-${getLibraryBranch(
 				route.params.pkg as LibraryName,
 				route.params.version as string
 			)}.json`

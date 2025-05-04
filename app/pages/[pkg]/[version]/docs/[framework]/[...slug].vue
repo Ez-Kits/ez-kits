@@ -15,10 +15,7 @@ const { data, status } = await useAsyncData("doc-content", async () => {
 });
 
 if (status.value === "error") {
-	showError({
-		statusCode: 404,
-		statusMessage: "Not Found",
-	});
+	setResponseStatus(404);
 }
 
 const parseMarkdown = useParseMarkdown();
@@ -50,8 +47,15 @@ definePageMeta({
 </script>
 
 <template>
+	<div
+		v-if="status === 'error'"
+		class="flex flex-col items-center justify-center h-full"
+	>
+		<h1 class="text-7xl font-bold">404</h1>
+		<p class="text-3xl">Page Not Found</p>
+	</div>
 	<CustomMDCRenderer
-		v-if="parseResult"
+		v-else-if="parseResult"
 		:content="parseResult.body"
 		:data="parseResult.data"
 	/>

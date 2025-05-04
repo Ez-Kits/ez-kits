@@ -91,15 +91,17 @@ export default function useDocSidebar(sidebarTabs: MaybeRef<SidebarTab[]>) {
 	);
 
 	function getActiveTab() {
-		return toValue(sidebarTabs).find((tab) =>
-			tab.children.some((child) => {
-				if (child.children) {
-					return hasActiveItem(child.children);
-				}
+		return (
+			toValue(sidebarTabs).find((tab) =>
+				tab.children.some((child) => {
+					if (child.children) {
+						return hasActiveItem(child.children);
+					}
 
-				return isActiveItem(child);
-			})
-		)?.label;
+					return isActiveItem(child);
+				})
+			)?.label ?? toValue(sidebarTabs)[0]?.label
+		);
 	}
 
 	const activeTabIndex = ref<string | undefined>(getActiveTab());
