@@ -49,6 +49,7 @@ provideDocData({
 // Active Headings
 const activeHeadings = ref<string[]>([]);
 const observer = ref<IntersectionObserver | null>(null);
+const contentRef = useTemplateRef<HTMLDivElement>("content");
 
 const setupIntersectionObserver = () => {
 	if (typeof window === "undefined") return;
@@ -75,10 +76,9 @@ const setupIntersectionObserver = () => {
 		}
 	}
 
+	const observedElements = new Map<string, IntersectionObserverEntry>();
 	const newObserver = new IntersectionObserver(
 		(entries) => {
-			const observedElements = new Map<string, IntersectionObserverEntry>();
-
 			entries.forEach((entry) => {
 				observedElements.set(entry.target.id, entry);
 			});
@@ -113,15 +113,13 @@ const setupIntersectionObserver = () => {
 };
 
 // Watch content changes
-watch(
-	() => content.value,
-	() => {
-		nextTick(() => {
-			setupIntersectionObserver();
-		});
-	},
-	{ immediate: true }
-);
+onMounted(() => {
+	setupIntersectionObserver();
+});
+
+useMutationObserver(contentRef, () => {
+	setupIntersectionObserver();
+});
 
 onUnmounted(() => {
 	if (observer.value) {
@@ -138,6 +136,7 @@ onUnmounted(() => {
 		>
 			<DocSidebar />
 			<div
+				ref="content"
 				:class="[
 					'text-base overflow-hidden pt-4 order-3 lg:order-2 pb-10',
 					{

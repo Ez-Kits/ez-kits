@@ -3,13 +3,40 @@ import { UButton } from "#components";
 import { getLibraryLatestVersionIndexUrl } from "~/libraries";
 import { libraries } from "~/libraries/libraries";
 
+const title = "Ez Kits";
+const description =
+	"Ez Kits is a collection of libraries that try to make it easier to build beautiful, responsive, and accessible web applications.";
+
+useHead({
+	title,
+	meta: [
+		{
+			name: "description",
+			content: description,
+		},
+		{
+			name: "icon",
+			content: "https://ez-kits.org/favicon.ico",
+		},
+		{
+			property: "lang",
+			content: "en_US",
+		},
+	],
+});
+defineOgImageComponent("NuxtSeo", {
+	title,
+	description,
+	siteName: title,
+	colorMode: "dark",
+});
 useSeoMeta({
-	title: "Ez Kits",
-	ogImage: "/logo.png",
-	ogDescription:
-		"Ez Kits is a collection of libraries that try to make it easier to build beautiful, responsive, and accessible web applications.",
-	description:
-		"Ez Kits is a collection of libraries that try to make it easier to build beautiful, responsive, and accessible web applications.",
+	ogTitle: title,
+	description,
+	ogDescription: description,
+	twitterTitle: title,
+	twitterDescription: description,
+	ogUrl: "https://ez-kits.org",
 });
 </script>
 <template>
@@ -60,13 +87,10 @@ useSeoMeta({
 					>
 						<UCard class="ring-0 [&>div]:border-b-0 [&>div]:first:pb-0">
 							<template #header>
-								<h3
-									class="text-lg font-bold cursor-pointer hover:underline"
-									@click="
-										navigateTo(getLibraryLatestVersionIndexUrl(libraryName))
-									"
-								>
-									{{ library.name }}
+								<h3 class="text-lg font-bold cursor-pointer hover:underline">
+									<a :href="getLibraryLatestVersionIndexUrl(libraryName)">
+										{{ library.name }}
+									</a>
 								</h3>
 							</template>
 							<p>{{ library.description }}</p>

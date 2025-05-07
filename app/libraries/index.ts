@@ -31,7 +31,7 @@ export function getLibraryLatestVersionIndexUrl(name: LibraryName) {
 		throw new Error(`Latest version not found for library ${name}`);
 	}
 
-	return `${name}/${latestVersion.name}`;
+	return `/${name}/${latestVersion.name}`;
 }
 
 export function getGithubDocsFileUrl(

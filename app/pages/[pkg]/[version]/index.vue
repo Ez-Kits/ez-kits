@@ -22,15 +22,50 @@ if (data.value) {
 	markdownParseResult.value = await parseMarkdown(data.value);
 }
 
-const navigateToGettingStarted = () => {
-	navigateTo(
-		`${route.path}/docs${markdownParseResult.value?.data["getting-started"]}`
-	);
-};
+const gettingStartedUrl = computed(() => {
+	return `${route.path}/docs${markdownParseResult.value?.data["getting-started"]}`;
+});
 
 const features = markdownParseResult.value?.data.features
 	? libraryFeaturesSchema.parse(markdownParseResult.value.data.features)
 	: [];
+
+const title = computed(() => library.value.name);
+const description = computed(() => library.value.description);
+
+useHead({
+	title,
+	meta: [
+		{
+			name: "description",
+			content: description,
+		},
+		{
+			name: "icon",
+			content: "https://ez-kits.org/favicon.ico",
+		},
+		{
+			property: "lang",
+			content: "en_US",
+		},
+	],
+});
+defineOgImageComponent("NuxtSeo", {
+	title,
+	description,
+	siteName: computed(() => library.value.name),
+	colorMode: "dark",
+});
+useSeoMeta({
+	ogTitle: title,
+	description,
+	ogDescription: description,
+	twitterTitle: title,
+	twitterDescription: description,
+	ogUrl: computed(
+		() => `https://ez-kits.org/${route.params.pkg}/${route.params.version}`
+	),
+});
 </script>
 
 <template>
@@ -56,7 +91,7 @@ const features = markdownParseResult.value?.data.features
 				variant="subtle"
 				size="xl"
 				trailing-icon="mdi-arrow-right"
-				@click="navigateToGettingStarted()"
+				:href="gettingStartedUrl"
 			>
 				Getting Started
 			</UButton>

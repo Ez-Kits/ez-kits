@@ -3,16 +3,26 @@ import type { MDCParserResult } from "@nuxtjs/mdc";
 import { getGithubDocsFileContent, getLibrary } from "~/libraries";
 import type { LibraryName } from "~/libraries/libraries";
 const route = useRoute("pkg-version-docs-framework-slug");
-const { pkg, version, slug, framework } = route.params;
-const library = getLibrary(pkg as LibraryName);
+const library = computed(() => getLibrary(route.params.pkg as LibraryName));
 
-const { data, status } = await useAsyncData("doc-content", async () => {
-	return getGithubDocsFileContent(
-		pkg as LibraryName,
-		version,
-		`${framework}/${slug?.join("/")}.md`
-	);
-});
+const { data, status } = await useAsyncData(
+	"doc-content",
+	async () => {
+		return getGithubDocsFileContent(
+			route.params.pkg as LibraryName,
+			route.params.version,
+			`${route.params.framework}/${route.params.slug?.join("/")}.md`
+		);
+	},
+	{
+		watch: [
+			() => route.params.pkg,
+			() => route.params.version,
+			() => route.params.framework,
+			() => route.params.slug,
+		],
+	}
+);
 
 if (status.value === "error") {
 	setResponseStatus(404);
@@ -31,18 +41,50 @@ watchEffect(() => {
 	docData.toc.value = parseResult.value?.toc;
 });
 
+const title = computed(
+	() => `${parseResult.value?.data.title} - ${library.value.name}`
+);
+const description = computed(() => parseResult.value?.data.description);
+
+definePageMeta({
+	layout: "doc",
+});
+
 useHead({
-	title: parseResult.value?.data.title,
-	titleTemplate: (title) => `${title} - ${library.name}`,
+	title,
 	meta: [
 		{
 			name: "description",
-			content: parseResult.value?.data.description,
+			content: description,
+		},
+		{
+			name: "icon",
+			content: "https://ez-kits.org/favicon.ico",
+		},
+		{
+			property: "lang",
+			content: "en_US",
 		},
 	],
 });
-definePageMeta({
-	layout: "doc",
+defineOgImageComponent("NuxtSeo", {
+	title: computed(() => parseResult.value?.data.title),
+	description,
+	siteName: computed(() => library.value.name),
+	colorMode: "dark",
+});
+useSeoMeta({
+	ogTitle: title,
+	description,
+	ogDescription: description,
+	twitterTitle: title,
+	twitterDescription: description,
+	ogUrl: computed(
+		() =>
+			`https://ez-kits.org/${route.params.pkg}/${route.params.version}/docs/${
+				route.params.framework
+			}/${route.params.slug?.join("/")}`
+	),
 });
 </script>
 

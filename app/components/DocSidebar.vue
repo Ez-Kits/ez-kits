@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import type { SelectItem } from "@nuxt/ui";
 import { useWindowSize } from "@vueuse/core";
+import { getLibraryLatestVersionIndexUrl } from "~/libraries";
 import {
 	getFrameworkIcon,
 	getFrameworkName,
 } from "~/libraries/frameworks-info";
+import type { LibraryName } from "~/libraries/libraries";
 
 const docData = injectDocData();
+
+const libraryLatestVersionIndexUrl = computed(() =>
+	docData.basicInfo.value?.currentLibrary
+		? getLibraryLatestVersionIndexUrl(
+				docData.basicInfo.value?.currentLibrary as LibraryName
+		  )
+		: undefined
+);
 
 // Frameworks
 const route = useRoute("pkg-version-docs-framework-slug");
@@ -107,7 +117,11 @@ const mergedCollapsed = computed(() => {
 		:unmount-on-hide="false"
 	>
 		<div class="flex gap-4 justify-between items-center">
-			<div class="flex gap-x-2 items-center">
+			<a
+				v-if="libraryLatestVersionIndexUrl"
+				:href="libraryLatestVersionIndexUrl"
+				class="flex gap-x-2 items-center"
+			>
 				<img
 					src="/logo.png"
 					class="w-8 h-auto object-contain"
@@ -116,7 +130,7 @@ const mergedCollapsed = computed(() => {
 				<span class="text-3xl font-black italic select-none">
 					{{ docData.basicInfo.value?.libraryConfig.name }}
 				</span>
-			</div>
+			</a>
 			<UButton
 				icon="i-lucide-menu"
 				variant="soft"

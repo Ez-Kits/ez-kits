@@ -7,6 +7,7 @@ export default defineNuxtConfig({
 		"@nuxt/eslint",
 		"@nuxt/ui",
 		"@nuxtjs/mdc",
+		"nuxt-og-image",
 	],
 	css: ["~/assets/css/main.css"],
 	compatibilityDate: "2024-11-01",
@@ -29,6 +30,15 @@ export default defineNuxtConfig({
 	routeRules: {
 		"/**/docs/**": {
 			isr: 3600,
+		},
+	},
+	site: {
+		url: "https://ez-kits.org",
+		name: "Ez Kits",
+	},
+	app: {
+		head: {
+			link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
 		},
 	},
 });
