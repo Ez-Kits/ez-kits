@@ -9,6 +9,17 @@ export default defineNuxtConfig({
 		"@nuxtjs/mdc",
 		"nuxt-og-image",
 	],
+	hooks: {
+		// shortcut: @nuxt/ui 3.0.1 generates a ui.d.ts Vue's SFC compiler can't parse, drop once @nuxt/ui is upgraded
+		ready(nuxt) {
+			const script = nuxt.options.vite.vue?.script;
+			if (script?.globalTypeFiles) {
+				script.globalTypeFiles = (script.globalTypeFiles as string[]).filter(
+					(file) => !file.endsWith("/types/ui.d.ts"),
+				);
+			}
+		},
+	},
 	css: ["~/assets/css/main.css"],
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
